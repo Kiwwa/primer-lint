@@ -13,7 +13,6 @@ tasks computed by the PrimerLint software.
 """
 
 class Sequence(object):
-
 	def __init__(self, sequence):
 		self.sequence = sequence
 
@@ -49,32 +48,36 @@ class Hairpin(Sequence):
 	def __init__(self, sequence):
 		super(Hairpin, self).__init__(sequence)
 
-	def simpledetecthairpin(self, toplength):
+	def simpledetecthairpin(self, minlength):
 		complmentseq = self.complement()
 		subseqlist = []
 		
-		# creates a list of substrings of self.sequence of size toplength
-		# XXX requires changes to make size of hairpin count up/down (???)
+		""" 
+		Creates a list of substrings of self.sequence of size minlength.
+		FIXUP: Requires changes to make size of hairpin count up/down (???)
+		"""
 		i = 1
-		while i <= ((len(self.sequence) - toplength) + 1):
-			subseqlist.append(self.sequence[(i - 1):(i + toplength) - 1])
+		while i <= ((len(self.sequence) - minlength) + 1):
+			subseqlist.append(self.sequence[(i - 1):(i + minlength) - 1])
 			i += 1
 
 		"""
-		for each substring in subseqlist, window over sequence
-		to find matches.
+		For each substring in subseqlist, window over sequence to find 
+		matches.
 		"""
 		for numinlist, seqstring in enumerate(subseqlist):
-			# j is number of toplength-sized windows
-			# over complement of sequence
-			j = ((len(self.sequence) - toplength) + 1)
+			"""
+			j is number of minlength-sized windows over complement of
+			sequence.
+			"""
+			j = ((len(self.sequence) - minlength) + 1)
 			while j >= 0:
-				if seqstring == complmentseq[(j - 1):(j + toplength) - 1]:
-					compseq = Sequence(complmentseq[(j - 1):(j + toplength) - 1]).complement()
+				if seqstring == complmentseq[(j - 1):(j + minlength) - 1]:
+					compseq = Sequence(complmentseq[(j - 1):(j + minlength) - 1]).complement()
 					yield [	numinlist,
 							numinlist + 4,
 							(j - 1),
-							((j + toplength) - 1)]
+							((j + minlength) - 1)]
 				j -= 1
 
 	@staticmethod
@@ -97,11 +100,3 @@ def complementbase(base):
 		return _complements[base]
 	else:
 		exit("found bad base %s" % base)
-
-# test a sequence for hairpin
-testthing = Hairpin('AAGGGGAAAAAAAAAAAACCCC').newdetecthairpin(4)
-for item in testthing:
-	print item
-
-# display GC content of a string (as a percent)
-print Sequence('GGGGCCCCCCTTTTT').gcpercent()
