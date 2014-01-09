@@ -12,12 +12,15 @@ primerlint.py is the point-of-execution for the analysis software.
 """
 
 import importfiles
+import analysismodules
 
 csvimport = importfiles.ImportCSV("testcsv.csv")
-csvimport.process()
-
+csvimport.close()
 testlist = csvimport.process()
 
-for listitem in testlist:
-	print listitem
+primerdimertest = analysismodules.PrimerDimer(
+					'GGGGGGGGGGTGGGGGGGGG',
+					'ACCCCCCCCCCCCCCCCCCC',
+					10)
 
+primerdimertest.basiccompare()
