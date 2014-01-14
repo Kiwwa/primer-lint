@@ -14,13 +14,16 @@ tasks computed by the PrimerLint software.
 
 class Sequence(object):
 	def __init__(self, sequence):
-		self.sequence = sequence
+		self.sequence = str(sequence).upper()
 
 	def complement(self):
 		return ''.join(map(complementbase, self.sequence))
 
 	def reversecomplement(self):
 		return ''.join(map(complementbase, self.sequence[::-1]))
+
+	def reversesequence(self):
+		return self.sequence[::-1]
 
 	def gcpercent(self):
 		return 	float(self.sequence.count('G') +\
@@ -49,36 +52,64 @@ class Hairpin(Sequence):
 		super(Hairpin, self).__init__(sequence)
 
 	def simpledetecthairpin(self, minlength):
-		complmentseq = self.complement()
-		subseqlist = []
-		
-		""" 
-		Creates a list of substrings of self.sequence of size minlength.
-		FIXUP: Requires changes to make size of hairpin count up/down (???)
 		"""
-		i = 1
-		while i <= ((len(self.sequence) - minlength) + 1):
-			subseqlist.append(self.sequence[(i - 1):(i + minlength) - 1])
-			i += 1
+		Detects potential hairpins of n-size within a given sequence using
+		literal matching of substrings within the sequence.
 
+		Args:
+		minlength --> size of minimum hairpin to search for 
 		"""
-		For each substring in subseqlist, window over sequence to find 
-		matches.
+		revcomseq 	= self.reversecomplement()
+		revseq 		= self.reversesequence()
 		"""
-		for numinlist, seqstring in enumerate(subseqlist):
+		Starts hairpinsize at minlength (user defined minimum length of 
+		hairpins) and increases till window is len(sequence) - 1
+		
+		FIXUP: Window should never have to be more than half the size of
+		the sequence(?) as it needs to stringmatch...
+			> Perhaps it is (windowsize / 2) + minlength as the max 
+			  for hairpinsize???
+		"""
+		hairpinsize = minlength
+		while hairpinsize < len(self.sequence):
 			"""
-			j is number of minlength-sized windows over complement of
-			sequence.
+			Creates a list of substrings of self.sequence of size minlength.
 			"""
-			j = ((len(self.sequence) - minlength) + 1)
-			while j >= 0:
-				if seqstring == complmentseq[(j - 1):(j + minlength) - 1]:
-					compseq = Sequence(complmentseq[(j - 1):(j + minlength) - 1]).complement()
-					yield [	numinlist,
-							numinlist + 4,
-							(j - 1),
-							((j + minlength) - 1)]
-				j -= 1
+			i = 1
+			subseqlist 	= []
+			while i <= ((len(self.sequence) - hairpinsize) + 1):
+				subseqlist.append(	self.sequence[(i - 1):
+									(i + hairpinsize) - 1])
+				i += 1
+			"""
+			For each substring in subseqlist, window over sequence to find 
+			matches.
+			"""
+			for numinlist, seqstring in enumerate(subseqlist):
+				"""
+				j is number of hairpinsize-sized windows over complement of
+				sequence.
+				"""
+				j = 0
+				while j < ((len(self.sequence) - hairpinsize) + 1):
+					subseq 		= revseq[(j - 1):(j + hairpinsize) - 1]
+					subrevseq 	= revcomseq[(j - 1):(j + hairpinsize) - 1]
+					seqminone 	= len(self.sequence) - 1
+					fwdrange 	= range(numinlist,
+										numinlist + hairpinsize)
+					revrange 	= range(seqminone - ((j + hairpinsize) - 1),
+										seqminone - (j - 1))
+					
+					if seqstring == subrevseq and\
+					not list(set(fwdrange) & set(revrange)):
+						yield [	numinlist,
+								numinlist + hairpinsize,
+								seqminone - ((j + hairpinsize) - 1),
+								seqminone - (j - 1),
+								seqstring,
+								subseq]
+					j += 1
+			hairpinsize += 1
 
 	@staticmethod
 	def complement_positions(top, bottom):
