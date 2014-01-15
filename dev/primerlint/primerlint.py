@@ -44,8 +44,12 @@ def arg_parsing():
 						type=int,
 						help="Detects potential primer-dimer interactions"\
 						"of input size between set of all primers.")
+	parser.add_argument("--pdpercent",
+						metavar="PDP",
+						type=int,
+						help="Minimum percent of primer-dimer crossover" \
+						"to detect.")
 	return parser
-
 
 def runsimplehairpincsv(minhpsize, processedcsv):
 	"""
@@ -70,7 +74,8 @@ def runsimplehairpincsv(minhpsize, processedcsv):
 		for item in currentseq:
 			print item
 
-### CSV Import 
+
+### CSV Import ------------------------------------------
 print "CSVRead", "-" * 69
 csvimport = impfile.ImportCSV("testcsv.csv")
 csvimport.close()
@@ -85,18 +90,34 @@ except:
 print "CSV imported and processed successfully."
 
 
-### Primer-Dimer
+### Define some primers ---------------------------------
+primer1 = anlymod.Sequence("CAGAACTAGGTAGAAACAGAGG")
+primer1.setname("primer-test-one")
+primer2 = anlymod.Sequence("GAAACAGTTAAAGTGTCTAATAATG")
+primer2.setname("primer-test-two")
+
+
+### Primer-Dimer ----------------------------------------
 print "\nPrimerDimer", "-" * 66
-primerdimertest = anlymod.PrimerDimer(
-				'GGGGGGGGGGTGGGGGGGGG',
-				'ACCCCCCCCCCCCCCCCCCC',
-				10)
 
-primerdimertest.basiccompare()
+print "Comparing '%s' and '%s':\n" % (primer1.name, primer2.name)
+primerdimertest = anlymod.\
+					PrimerDimer(primer1.sequence, primer2.complement(), 6)
+primerdimeroutput = primerdimertest.primerdimerlocal()
 
-# imported and processed CSV file prior to calling this method
-runsimplehairpincsv(4, testlist)
+for item in primerdimeroutput:
+	print anlymod.\
+			PrimerDimer.\
+			format_alignment_compl(item[0],item[1],item[2],item[3],item[4])
 
-### GC Content
+
+### Hairpin ---------------------------------------------
+print "Hairpin", "-" * 66
+print primer1.name
+for item in anlymod.Hairpin(primer1.sequence).simpledetecthairpin(3):
+	print item
+
+
+### GC Content ------------------------------------------
 print "\nGCPercent", "-" * 68
 print anlymod.Sequence('AAATTTTGGGGGAAAAAAAAAAAAAACCCC').gcpercent() * 100
