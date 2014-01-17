@@ -10,7 +10,6 @@ PrimerLint is distributed as part of the hiplex-primer software bundle.
 
 importfiles.py is used within PrimerLint to import data from files.
 """
-
 class ImportCSV(object):
 	def __init__(self, filename):
 		self.filename = filename

@@ -33,7 +33,7 @@ class Sequence(object):
 
 	def gcpercent(self):
 		return 	float(self.sequence.count('G') +\
-				self.sequence.count('C')) / float(len(self.sequence))
+			self.sequence.count('C')) / float(len(self.sequence))
 
 
 class PrimerDimer(Sequence):
@@ -43,6 +43,14 @@ class PrimerDimer(Sequence):
 		self.pdlength = pdlength
 
 	def basiccompare(self):
+		"""
+		FIXME: this needs both a docstring AND to be fixed, currently only 
+		comparing the first n number of characters for complementarity. 
+
+		Currently it needs:
+			> windowing for different-sized primers AND 
+			> to properly count complementary bases (not just to n)
+		"""
 		p1len = len(self.sequence)
 		p2len = len(self.comparesequence)
 
@@ -52,11 +60,10 @@ class PrimerDimer(Sequence):
 			print "fwd 3': %s" % (self.sequence[p1len - self.pdlength:p1len])
 			print "rev 3': %s" % (self.comparesequence[0:self.pdlength])
 
-	def primerdimerlocal(self): 
+	def pdlocal(self): 
 		"""
-		Compares sequence and complement(comparesequence) for the highest 
-		number of identical characters within a single alignment of the two
-		strings.
+		Compares sequence and comparesequence for the highest number of 
+		identical characters within a single alignment of the two strings.
 
 		Output is a list with: 
 			[sequence, 
@@ -65,10 +72,9 @@ class PrimerDimer(Sequence):
 			 beginning-of-alignment, 
 			 end-of-alignment]
 
-		Use of the static method 'format_alignment_compl' to format the output
-		is highly recommended to display the alignments.
+		Use of the static method 'format_alignment_compl' to format the 
+		output is highly recommended to display the alignments.
 		"""
-
 		# The negative penalties for gaps in the sequence being set to the
 		# size of the sequence means local sequences with gaps can NEVER
 		# have higher scores than those without gaps (exactly the behaviour
@@ -118,8 +124,8 @@ class Hairpin(Sequence):
 		Args:
 		minlength --> size of minimum hairpin to search for.
 		"""
-		revcomseq 	= self.reversecomplement()
-		revseq 		= self.reversesequence()
+		revcomseq = self.reversecomplement()
+		revseq = self.reversesequence()
 		"""
 		Starts hairpinsize at minlength (user defined minimum length of 
 		hairpins) and increases till window is len(sequence) - 1
@@ -136,8 +142,8 @@ class Hairpin(Sequence):
 			i = 1
 			subseqlist 	= []
 			while i <= ((len(self.sequence) - hairpinsize) + 1):
-				subseqlist.append(	self.sequence[(i - 1):
-									(i + hairpinsize) - 1])
+				subseqlist.append(self.sequence[(i - 1):
+					(i + hairpinsize) - 1])
 				i += 1
 			"""
 			For each substring in subseqlist, window over sequence to find 
@@ -150,22 +156,21 @@ class Hairpin(Sequence):
 				"""
 				j = 0
 				while j < ((len(self.sequence) - hairpinsize) + 1):
-					subseq 		= revseq[(j - 1):(j + hairpinsize) - 1]
-					subrevseq 	= revcomseq[(j - 1):(j + hairpinsize) - 1]
-					seqminone 	= len(self.sequence) - 1
-					fwdrange 	= range(numinlist,
-										numinlist + hairpinsize)
-					revrange 	= range(seqminone - ((j + hairpinsize) - 1),
-										seqminone - (j - 1))
+					subseq 	= revseq[(j - 1):(j + hairpinsize) - 1]
+					subrevseq = revcomseq[(j - 1):(j + hairpinsize) - 1]
+					seqminone = len(self.sequence) - 1
+					fwdrange = range(numinlist, numinlist + hairpinsize)
+					revrange = range(seqminone - ((j + hairpinsize) - 1),
+						seqminone - (j - 1))
 					
 					if seqstring == subrevseq and\
 					not list(set(fwdrange) & set(revrange)):
-						yield [	numinlist,
-								numinlist + hairpinsize,
-								seqminone - ((j + hairpinsize) - 1),
-								seqminone - (j - 1),
-								seqstring,
-								subseq]
+						yield [numinlist,
+							numinlist + hairpinsize,
+							seqminone - ((j + hairpinsize) - 1),
+							seqminone - (j - 1),
+							seqstring,
+							subseq]
 					j += 1
 			hairpinsize += 1
 
