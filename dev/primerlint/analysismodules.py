@@ -186,10 +186,8 @@ class Hairpin(Sequence):
 # GLOBAL VARS
 _complements = {'-': '-', 'N': 'N', 'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
 
-
 def iscomplement(x, y):
 	return _complements[x] == y
-
 
 def complementbase(base):
 	if base in _complements:
