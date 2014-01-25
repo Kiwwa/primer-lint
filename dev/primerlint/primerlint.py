@@ -214,6 +214,7 @@ def importfileblock():
 		print "Hiplex-CSV file imported successfully"
 		return importedhiplex
 
+
 	### FASTA Import ------------------------------------
 	print "\nFASTA Import", "-" * 66
 

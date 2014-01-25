@@ -32,8 +32,14 @@ class Sequence(object):
 		return self.sequence[::-1]
 
 	def gcpercent(self):
-		return 	float(self.sequence.count('G') +\
-			self.sequence.count('C')) / float(len(self.sequence))
+		countg = self.sequence.count("G")
+		countc = self.sequence.count("c")
+
+		if countc == 0 and countg == 0:
+			return float(0)
+		else:
+			return 	float(self.sequence.count('G') +\
+				self.sequence.count('C')) / float(len(self.sequence))
 
 
 class PrimerDimer(Sequence):
@@ -174,6 +180,14 @@ class Hairpin(Sequence):
 					j += 1
 			hairpinsize += 1
 
+	def detectlocalhairpin(self, minlength):
+		for a in pairwise2.align.localxs(self.sequence,
+										self.comparesequence,
+										-len(self.sequence),
+										-len(self.sequence)):
+			if int(a[2]) >= self.pdlength:
+				yield(a)
+
 	@staticmethod
 	def complement_positions(top, bottom):
 		positions = []
@@ -194,3 +208,6 @@ def complementbase(base):
 		return _complements[base]
 	else:
 		exit("found bad base %s" % base)
+
+testing = Sequence("AAAAAATTTTTAATATATATTTATTT")
+print testing.gcpercent()
