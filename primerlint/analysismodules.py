@@ -33,7 +33,7 @@ class Sequence(object):
 
 	def gcpercent(self):
 		countg = self.sequence.count("G")
-		countc = self.sequence.count("c")
+		countc = self.sequence.count("C")
 
 		if countc == 0 and countg == 0:
 			return float(0)
@@ -208,6 +208,3 @@ def complementbase(base):
 		return _complements[base]
 	else:
 		exit("found bad base %s" % base)
-
-testing = Sequence("AAAAAATTTTTAATATATATTTATTT")
-print testing.gcpercent()
