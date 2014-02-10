@@ -10,6 +10,15 @@ PrimerLint is distributed as part of the hiplex-primer software bundle.
 
 importfiles.py is used within PrimerLint to import data from files.
 """
+import sys
+from Bio import SeqIO
+
+def validatesequences(listofseqs):
+	for sequence in listofseqs:
+		for base in sequence[1]:
+			if base not in 'ACGT':
+				sys.exit("Bad base found in sequence '%s'." % sequence[1])
+				
 
 class ImportedData(object):
 	"""
@@ -23,32 +32,33 @@ class ImportedData(object):
 
 class ImportHiplex(ImportedData):
 	def __init__(self, filename):
-		super(ImportHiplex, self).__init__([])
+		ImportedData.__init__(self, [])
 		self.filename = filename
-
-	def open(self):
-		self.inputfile = open(self.filename, "r")
 
 	def process(self):
-		inputfiledata = self.inputfile.read().split('\n')
-		for splitline in inputfiledata:
-			delimited = splitline.split(',')
-			self.records.append([delimited[0], delimited[1]])
-		return self.records
+		try:
+			with open(self.filename, "r") as self.inputfile:
+				inputfiledata = self.inputfile.read().split('\n')
+			
+			for splitline in inputfiledata:
+				delimited = splitline.split(',')
+				self.records.append([delimited[0], delimited[1]])
+				validatesequences(self.records)
+			return self.records
+		except:
+			raise
 
-	def close(self):
-		self.inputfile.close()
 
-
-class ImportFASTA(object):
+class ImportFASTA(ImportedData):
 	def __init__(self, filename):
-		from Bio import SeqIO
+		ImportedData.__init__(self, [])
 		self.filename = filename
-		
-		seqrecordslist = []
-		for seqrecord in SeqIO.parse(filename, "fasta"):
-			seqrecordslist.append(seqrecord)
 
-	def printrecords(self):
-		for record in self.seqrecordslist:
-			print record
+	def process(self):
+		try:
+			for seqrecord in SeqIO.parse(self.filename, "fasta"):
+				self.records.append([seqrecord.id, str(seqrecord.seq)])
+				validatesequences(self.records)
+			return self.records
+		except:
+			raise

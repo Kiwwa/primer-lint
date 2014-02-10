@@ -129,6 +129,31 @@ class Hairpin(Sequence):
 
 		Args:
 		minlength --> size of minimum hairpin to search for.
+
+		Example:
+		Sequence is TTGAATATAATGGGCCCAATATTCC
+
+		 /-G-G-\
+		G      C
+		T	   C
+		A	   C
+		A      A
+		T------A
+		A------T
+		T------A
+		A------T
+		A------T
+		G------C
+		T      C
+		T      C
+
+		Has a 6 rung hairpin as detected using simpledetecthairpin.
+		Can be validated by running below code within this package;
+
+		#testhairpin = Hairpin("TTGAATATAATGGGCCCAATATTCC")
+		#outputsimple = testhairpin.simpledetecthairpin(3)
+		#for item in outputsimple:
+		#	print item
 		"""
 		revcomseq = self.reversecomplement()
 		revseq = self.reversesequence()

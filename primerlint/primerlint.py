@@ -26,7 +26,6 @@ def arg_parsing():
 	parser.add_argument("--importhiplex",
 						metavar="CSV",
 						type=str,
-						required=True,
 						help="Import primers from a hiplex-output "\
 						"CSV-formatted file.")
 	parser.add_argument("--importfasta",
@@ -67,28 +66,7 @@ def arg_parsing():
 						type=int,
 						help="Detect potential primer-dimer interactions "\
 						"of input size between set of all primers.")
-	parser.add_argument("--htmloutput",
-						metavar="HTML",
-						type=str,
-						help="If used, outputs a HTML version of the "\
-						"analysed primer information.")
 	return parser
-
-def runhipleximport(arguments):
-	hipleximport = infile.ImportHiplex(args.importhiplex)
-
-	try:
-		hipleximport.open()
-		importlist = hipleximport.process()
-		hipleximport.close()	
-	except:
-		print "runcsvimport: Error importing CSV-file...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	return importlist
-
-def runfastaimport(arguments):
-	fastaimport = infile.ImportFASTA(args.importfasta)
 
 def runsimplehairpincsv(minhpsize, processedcsv):
 	"""
@@ -190,7 +168,7 @@ def gcbrief(processedcsv):
 		gccontent = amod.Sequence(item[1]).gcpercent() * 100
 		yield "%02d\n" % (gccontent)
 
-def importfileblock():
+def importfiles():
 	"""
 	Check whether multiple import actions have been requested; fail if so 
 	and inform user why only one import can be performed at a time.
@@ -206,27 +184,48 @@ def importfileblock():
 		if item is not None:
 			importargcounter += 1
 
-	if importargcounter != 1:
+	if importargcounter > 1:
 		print "You have selected multiple import locations; please only "\
 		"select one at a time."
 		sys.exit("Quitting due to multiple import locations.")
+	elif importargcounter == 0:
+		print "You have not selected any import locations; please select "\
+		"data to import."
+		sys.exit("Quitting due to no import locations.")
 
 
 	### Hiplex CSV Import -------------------------------
-	print "\nHiplex Import", "-" * 67
-	try:
-		importedhiplex = runhipleximport(args)
-	except:
-		print "Error importing hiplex-CSV-file...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		print "Hiplex-CSV file imported successfully"
-		return importedhiplex
+
+	if args.importhiplex != None:
+		try:
+			print "\nHiplex Import", "-" * 67
+			hipleximport = infile.ImportHiplex(args.importhiplex)
+			importedhiplex = hipleximport.process()
+		except IOError:
+			print "IOError: Cannot locate file at '%s'" % args.importhiplex
+			sys.exit("Quitting due to import error.")
+		except:
+			print "Error importing hiplex-CSV file...", sys.exc_info()[0]
+			sys.exit("Quitting due to error.")
+		else:
+			print "Hiplex-CSV file imported successfully."
+			return importedhiplex
 
 
 	### FASTA Import ------------------------------------
-	print "\nFASTA Import", "-" * 66
+	if args.importfasta != None:
+		try:
+			print "\nFASTA Import", "-" * 66
+			fastaimport = infile.ImportFASTA(args.importfasta)
+			importedfasta = fastaimport.process()
+		except:
+			print "Error importing FASTA-formatted-file...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
+		else:
+			print "FASTA-formatted file imported successfully."
+			return importedfasta
+
 
 ### Argument parsing ------------------------------------
 argparsing = arg_parsing()
@@ -234,7 +233,7 @@ args = argparsing.parse_args()
 
 
 ### Attempt data import ---------------------------------
-importeddata = importfileblock()
+importeddata = importfiles()
 
 
 ### Open a log-file -------------------------------------
@@ -247,11 +246,13 @@ except:
 	raise
 	sys.exit("Quitting due to error.")
 else:
-	print "Log file opened at %s" % args.outputlog
+	print "Log file opened at %s." % args.outputlog
 
 
 ### Primer-Dimer ----------------------------------------
-print "\nPrimerDimer", "-" * 66
+if args.primerdimer != None:
+	print "\nPrimerDimer", "-" * 66
+
 if args.primerdimer != None:	
 	try:
 		logoutput.write("PRIMER-DIMER DETECTION --------------\n")
@@ -266,7 +267,9 @@ if args.primerdimer != None:
 
 
 ### Hairpin ---------------------------------------------
-print "\nHairpin", "-" * 66
+if args.hairpin != None or args.hairpinmaxsizes == True:
+	print "\nHairpin", "-" * 66
+
 if args.hairpin != None:
 	try:
 		logoutput.write("HAIRPIN DETECTION: --------------------\n")
@@ -286,21 +289,26 @@ if args.hairpin != None:
 if args.hairpinmaxsizes == True:
 	try:
 		logoutput.write("MAX HAIRPIN OUTPUT: --------------------\n")
+		hpcounter = 0
 		for num, row in enumerate(importeddata):
 			for item in amod.Hairpin(row[1]).simpledetecthairpin(1):
 				pass
-			logoutput.write(row[0] + ": " + str(len(item[4])) + "\n")
+			logoutput.write(str(len(item[4])) + "\n")
+			if hpcounter % 50 == 0:
+				print "Done... %d" % hpcounter
+			hpcounter += 1
 	except:
-		print "Error running hairpin section two...", sys.exc_info()[0]
+		print "Error running hairpin max sizes...", sys.exc_info()[0]
 		raise
 		sys.exit("Quitting due to error.")
 	else:
 		pass
 
 
-
 ### GC Content ------------------------------------------
-print "\nGCPercent", "-" * 68
+if args.cg == True or args.cgbrief == True:
+	print "\nGCPercent", "-" * 68
+
 if args.cg == True:
 	try:
 		logoutput.write("GC-CONTENT DETECTION -------------------\n")
@@ -333,7 +341,7 @@ if args.cgbrief == True:
 			for item in gcbrief(importeddata):
 				logoutput.write(item)
 	except:
-		print "Error equating GC Content...", sys.exc_info()[0]
+		print "Error equating brief GC Content...", sys.exc_info()[0]
 		raise
 		sys.exit("Quitting due to error.")
 	else:
