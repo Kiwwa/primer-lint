@@ -3,3 +3,4 @@
 *.tsv
 runner.py
 chromosomes/
+*.log
