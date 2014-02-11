@@ -30,6 +30,16 @@ potentially troublesome primers or post-sequencing to analyse the impact each
 feature had on the primers efficacy. 
 
 --------------------------------------------------------------------------------
+Installation
+--------------------------------------------------------------------------------
+
+The easiest way to install Primer-Lint is via pip (3).
+
+Type this into terminal: pip install git+http//github.com/Kiwwa/primer-lint.git
+
+Alternatively Primer-Lint can be downloaded and manually installed from (4).
+
+--------------------------------------------------------------------------------
 Features 
 --------------------------------------------------------------------------------
 
@@ -199,3 +209,7 @@ References
 PCR-approach-for-massively-parallel-sequencing/biotechniques-345734.html
 
 2. https://github.com/bjpop/hiplex-primer
+
+3. http://www.pip-installer.org/en/latest/installing.html
+
+4. https://github.com/Kiwwa/Primer-Lint
