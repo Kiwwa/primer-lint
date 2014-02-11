@@ -49,9 +49,9 @@ Primer hairpins: Measures primer sequence self-interaction.
    * A run of six rungs of self-interaction are present within this sequence 
      (as shown below);
 
-                         TTGAATATAATG\
-                           ||||||     G
-                          CCTTATAACCC/
+   TTGAATATAATG\
+     ||||||     G
+    CCTTATAACCC/
 
 Primer Dimer interactions: Measures two or more primers interaction with each 
 other.
@@ -61,9 +61,9 @@ other.
       > Sequence two - AAAGCTCCCTAT
    * Sequences have six nuclotide run that could interact (as shown below);
 
-                            GGGATATACTAA
-                            ||||||
-                      AAAGCTCCCTAT
+          GGGATATACTAA
+          ||||||
+    AAAGCTCCCTAT
 
 --------------------------------------------------------------------------------
 Command line interaction
@@ -108,15 +108,15 @@ Arguments:
 
 --cgmax n
    Description: The maximum bound of acceptable CG content.
-   Default:     60
    Type:        Integer
+   Default:     60
 
 --hairpin n
    Description: Determines all continuous hairpin locations on each primer 
                 imported. Integer supplied to this argument is the minimum size 
                 of hairpin to report.
-   Default:     0
    Type:        Integer
+   Default:     0
 
 --hairpinmaxsizes
    Description: Calculates the same hairpins as --hairpin, however generates a 

@@ -226,15 +226,10 @@ def importfiles():
 			print "FASTA-formatted file imported successfully."
 			return importedfasta
 
-
+### Globally required variable setup
 ### Argument parsing ------------------------------------
 argparsing = arg_parsing()
 args = argparsing.parse_args()
-
-
-### Attempt data import ---------------------------------
-importeddata = importfiles()
-
 
 ### Open a log-file -------------------------------------
 print "\nLog File Open", "-" * 65
@@ -248,105 +243,111 @@ except:
 else:
 	print "Log file opened at %s." % args.outputlog
 
+def main():
+	### Attempt data import ---------------------------------
+	importeddata = importfiles()
 
-### Primer-Dimer ----------------------------------------
-if args.primerdimer != None:
-	print "\nPrimerDimer", "-" * 66
+	### Primer-Dimer ----------------------------------------
+	if args.primerdimer != None:
+		print "\nPrimerDimer", "-" * 66
 
-if args.primerdimer != None:	
-	try:
-		logoutput.write("PRIMER-DIMER DETECTION --------------\n")
-		for item in localprimerdimer(args.primerdimer, importeddata, args):
-			logoutput.write(item)
-	except:
-		print "Error running primer-dimer...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		pass
+	if args.primerdimer != None:	
+		try:
+			logoutput.write("PRIMER-DIMER DETECTION --------------\n")
+			for item in localprimerdimer(args.primerdimer, importeddata, args):
+				logoutput.write(item)
+		except:
+			print "Error running primer-dimer...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
+		else:
+			pass
 
 
-### Hairpin ---------------------------------------------
-if args.hairpin != None or args.hairpinmaxsizes == True:
-	print "\nHairpin", "-" * 66
+	### Hairpin ---------------------------------------------
+	if args.hairpin != None or args.hairpinmaxsizes == True:
+		print "\nHairpin", "-" * 66
 
-if args.hairpin != None:
-	try:
-		logoutput.write("HAIRPIN DETECTION: --------------------\n")
-		for num, row in enumerate(importeddata):
-			# print ("%d. Testing %s for hairpin...") % (num, row[0])
-			for item in amod.Hairpin(row[1]).simpledetecthairpin(args.hairpin):
-				logoutput.write(row[0] + " - " + row[1] + "\n")
+	if args.hairpin != None:
+		try:
+			logoutput.write("HAIRPIN DETECTION: --------------------\n")
+			for num, row in enumerate(importeddata):
+				# print ("%d. Testing %s for hairpin...") % (num, row[0])
+				for item in amod.Hairpin(row[1]).simpledetecthairpin(args.hairpin):
+					logoutput.write(row[0] + " - " + row[1] + "\n")
+					logoutput.write(str(len(item[4])) + "\n")
+		except:
+			print "Error running hairpin...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
+		else:
+			print "Potential hairpins of greater than size %d calculated"\
+				% args.hairpin
+
+	if args.hairpinmaxsizes == True:
+		try:
+			logoutput.write("MAX HAIRPIN OUTPUT: --------------------\n")
+			hpcounter = 0
+			for num, row in enumerate(importeddata):
+				for item in amod.Hairpin(row[1]).simpledetecthairpin(1):
+					pass
 				logoutput.write(str(len(item[4])) + "\n")
-	except:
-		print "Error running hairpin...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		print "Potential hairpins of greater than size %d calculated"\
-			% args.hairpin
-
-if args.hairpinmaxsizes == True:
-	try:
-		logoutput.write("MAX HAIRPIN OUTPUT: --------------------\n")
-		hpcounter = 0
-		for num, row in enumerate(importeddata):
-			for item in amod.Hairpin(row[1]).simpledetecthairpin(1):
-				pass
-			logoutput.write(str(len(item[4])) + "\n")
-			if hpcounter % 50 == 0:
-				print "Done... %d" % hpcounter
-			hpcounter += 1
-	except:
-		print "Error running hairpin max sizes...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		pass
-
-
-### GC Content ------------------------------------------
-if args.cg == True or args.cgbrief == True:
-	print "\nGCPercent", "-" * 68
-
-if args.cg == True:
-	try:
-		logoutput.write("GC-CONTENT DETECTION -------------------\n")
-		if args.cgmin != None and args.cgmax != None:
-			for item in gccontent(importeddata, args.cgmin, args.cgmax):
-				logoutput.write(item)
+				if hpcounter % 50 == 0:
+					print "Done... %d" % hpcounter
+				hpcounter += 1
+		except:
+			print "Error running hairpin max sizes...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
 		else:
-			print "You have not given cg-minimum and cg-maximum values; "\
-			"defaulting to 40 and 60"
-			wait()
-			for item in gccontent(importeddata):
-				logoutput.write(item)
-	except:
-		print "Error equating GC Content...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		print "GC Content calculated."
+			pass
 
-if args.cgbrief == True:
-	try:
-		logoutput.write("BRIEF GC-CONTENT DETECTION -------------------\n")
-		if args.cgmin != None and args.cgmax != None:
-			for item in gcbrief(importeddata):
-				logoutput.write(item)
+
+	### GC Content ------------------------------------------
+	if args.cg == True or args.cgbrief == True:
+		print "\nGCPercent", "-" * 68
+
+	if args.cg == True:
+		try:
+			logoutput.write("GC-CONTENT DETECTION -------------------\n")
+			if args.cgmin != None and args.cgmax != None:
+				for item in gccontent(importeddata, args.cgmin, args.cgmax):
+					logoutput.write(item)
+			else:
+				print "You have not given cg-minimum and cg-maximum values; "\
+				"defaulting to 40 and 60"
+				wait()
+				for item in gccontent(importeddata):
+					logoutput.write(item)
+		except:
+			print "Error equating GC Content...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
 		else:
-			print "You have not given cg-minimum and cg-maximum values; "\
-			"defaulting to 40 and 60"
-			wait()
-			for item in gcbrief(importeddata):
-				logoutput.write(item)
-	except:
-		print "Error equating brief GC Content...", sys.exc_info()[0]
-		raise
-		sys.exit("Quitting due to error.")
-	else:
-		print "GC Content calculated."
+			print "GC Content calculated."
+
+	if args.cgbrief == True:
+		try:
+			logoutput.write("BRIEF GC-CONTENT DETECTION -------------------\n")
+			if args.cgmin != None and args.cgmax != None:
+				for item in gcbrief(importeddata):
+					logoutput.write(item)
+			else:
+				print "You have not given cg-minimum and cg-maximum values; "\
+				"defaulting to 40 and 60"
+				wait()
+				for item in gcbrief(importeddata):
+					logoutput.write(item)
+		except:
+			print "Error equating brief GC Content...", sys.exc_info()[0]
+			raise
+			sys.exit("Quitting due to error.")
+		else:
+			print "GC Content calculated."
 
 
-### Close open files --------------------------------------
-logoutput.close()
+	### Close open files --------------------------------------
+	logoutput.close()
+
+if __name__ == '__main__':
+    main()
