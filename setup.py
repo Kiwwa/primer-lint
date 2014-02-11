@@ -8,14 +8,10 @@ setup(
     author='Luke Shillabeer',
     author_email='lshillabeer@gmail.com',
     packages=['primerlint'],
-    scripts=['Primer_design/Primer_design.py'],
-    entry_points={
-        'console_scripts': ['primer-lint = primerlint:main']
-    },
-    url='https://github.com/Kiwwa/primer-lint',
-    licence='LICENSE.txt',
+    scripts=['primerlint/primerlint.py','primerlint/importfiles.py','primerlint/outputfiles.py','primerlint/analysismodules.py'],
+    entry_points={'console_scripts': ['primer-lint = primerlint:main']},
     description=(
-        'Hiplex-Primer: A tool for generating primers for the Hi-Plex \
+        'Primer-Lint: A tool for analysing primers for the Hi-Plex \
          targeted, multiplexed DNA sequencing strategy.'),
     install_requires=['biopython >= 1.62'],
 )
