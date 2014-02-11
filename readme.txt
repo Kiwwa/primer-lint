@@ -35,35 +35,35 @@ Features
 
 Features able to be analysed for each primer are;
 
-GC content: The count of G and C nucleotides within each given primer, reported
-			as a percentage.
+GC content: The count of G and C nucleotides within each given primer, reported 
+            as a percentage.
  
-	* Example primer sequence is GGGAATAACC.
-	* Total length of sequence is 10 nucleotides.
-	* Count of G's and C's within sequence is 5.
-	* GC content of example sequence is 5/10, 50%.
+   * Example primer sequence is GGGAATAACC.
+   * Total length of sequence is 10 nucleotides.
+   * Count of G's and C's within sequence is 5.
+   * GC content of example sequence is 5/10, 50%.
 
 Primer hairpins: Measures primer sequence self-interaction.
 
-	* Example sequence is TTGAATATAATGGCCCAATATTCC.
-	* A run of six rungs of self-interaction are present within this sequence 
-	(as shown below).
+   * Example sequence is TTGAATATAATGGCCCAATATTCC.
+   * A run of six rungs of self-interaction are present within this sequence 
+     (as shown below);
 
-							TTGAATATAATG\
-							  ||||||	 G
-							 CCTTATAACCC/
+                         TTGAATATAATG\
+                           ||||||     G
+                          CCTTATAACCC/
 
 Primer Dimer interactions: Measures two or more primers interaction with each 
-						   other.
+other.
 
-	* Example sequences are:
-		> Sequence one - GGGATATACTAA
-		> Sequence two - AAAGCTCCCTAT
-	* Sequences have six nuclotide run that could interact(as shown below).
+   * Example sequences are:
+      > Sequence one - GGGATATACTAA
+      > Sequence two - AAAGCTCCCTAT
+   * Sequences have six nuclotide run that could interact (as shown below);
 
-						      GGGATATACTAA
-						      ||||||
-						AAAGCTCCCTAT
+                            GGGATATACTAA
+                            ||||||
+                      AAAGCTCCCTAT
 
 --------------------------------------------------------------------------------
 Command line interaction
@@ -72,58 +72,68 @@ Command line interaction
 Interaction with the tool is via the command-line. 
 
 usage: primerlint.py [--importhiplex CSV] [--importfasta FAS] --outputlog O 
-					 [--cg] [--cgbrief] [--cgmin CGMIN] [--cgmax CGMAX]
-                     [--hairpin HP] [--hairpinmaxsizes] [--primerdimer PD]
+       [--cg] [--cgbrief] [--cgmin CGMIN] [--cgmax CGMAX] [--hairpin HP] 
+       [--primerdimer PD]
 
 Arguments: 
 	
-	--importhiplex: Type: File
-					Description: Imports a CSV file, formatted in the 
-					hiplex-primer (2) output style. Expects primer-names in 
-					first column and sequence in the second column.
+--importhiplex
+   Description: Imports a CSV file, formatted in the hiplex-primer (2) 
+                output style. Expects primer-names in first column and sequence 
+                in the second column.
+   Type:        File
+
+--importfasta
+   Description: Imports a FASTA formatted file. Can process multiple FASTA 
+                sequences from a single file.
+   Type:        File
 	
-	--importfasta:	Type: File
-					Description: Imports a FASTA formatted file. Can process 
-					multiple FASTA sequences from a single file.
-	
-	--outputlog: 	Type: File
-					Description: Location and name of the output file.
+--outputlog
+   Description: Location and name of the output file.
+   Type:        File
 
-	--cg:			Type: Boolean
-					Description: Calculates the CG content percentage of each
-					primer imported.
+--cg
+   Description: Calculates the CG content percentage of each primer imported.
+   Type:        Boolean
 
-	--cgbrief:		Type: Boolean
-					Description: Calculates the CG content percentage of each
-					primer imported and generates a much briefer report.
+--cgbrief
+   Description: Calculates the CG content percentage of each primer imported and
+                generates a much briefer report.
+   Type:        Boolean
 
-	--cgmin n: 		Type: Integer
-					Description: The minimum bound of acceptable CG content
-					(set to 40 by default).
+--cgmin n
+   Description: The minimum bound of acceptable CG content.
+   Type:        Integer
+   Default:     40
 
-	--cgmax n:		Type: Integer
-					Description: The maximum bound of acceptable CG content
-					(set to 60 by default).
+--cgmax n
+   Description: The maximum bound of acceptable CG content.
+   Default:     60
+   Type:        Integer
 
-	--hairpin n:	Type: Integer
-					Description: Determines all continuous hairpin locations on
-					each primer imported. Integer supplied to this argument is 
-					the minimum size of hairpin to report.
+--hairpin n
+   Description: Determines all continuous hairpin locations on each primer 
+                imported. Integer supplied to this argument is the minimum size 
+                of hairpin to report.
+   Default:     0
+   Type:        Integer
 
-	--hairpinmaxsizes: 	Type: Boolean
-						Description: Calculates the same hairpins as --hairpin, 
-						however generates a significantly briefer report of only
-						the maximum size of hairpin, rather than all possible 
-						hairpins.
+--hairpinmaxsizes
+   Description: Calculates the same hairpins as --hairpin, however generates a 
+                significantly briefer report of only the maximum size of 
+                hairpin, rather than all possible hairpins.
+   Type:        Boolean
 
-	--primerdimer: 	Type: Integer
-					Description: Determines all possible primer-dimer 
-					interactions between all of the imported primers.
-					Note: As this is comparing all primers to all primers, the
-					speed of this calculation increases exponentially as more
-					primers are added. A maximum of 500 primers is recommended.
+--primerdimer
+   Description: Determines all possible primer-dimer interactions between all of
+                the imported primers.
+   Type:        Integer
+   Default:     1
+   Note:        As this is comparing all primers to all primers, the speed of 
+                this calculation increases exponentially as more primers are 
+                added. A maximum of 500 primers is recommended.
 
-File type arguments can be specified as either relative or absolute paths.
+File type arguments can be specified as either relative or absolute paths. 
 Relative paths are interpreted "relative" to the directory from which the 
 program was executed, whereas absolute paths are not, and must be specified in 
 full. If the file you wish to specify resides in the same directory from which 
@@ -146,43 +156,18 @@ message will be displayed if it is attempted.
 
 Primer-Lint's inputs are:
 
-	* Comma Seperated Values (.csv): Column one is primer/region name, column 
-									 two is the primer sequence.
-	
-	* FASTA formatted file (.fa): The text after '>' is used as a primer/region
-								  name, the sequence underneath is used as
-								  the primer sequence.
+   * FASTA: The text after '>' is used as a primer/region name, the sequence 
+            underneath is used as the primer sequence.
+   * CSV:   Column one is primer/region name, column two is the primer sequence.
 
 Both accepted input formats can contain multiple sequences within a single file.
 
 Primer-Lint's output is:
-	
-	* Log file output: The log file will contain the generated information based
-					   on the arguments provided when Primer-Lint is run.
 
-An example of the output log is shown below;
+   * Log file: The log file will contain the generated information based on the 
+               arguments provided when Primer-Lint is run. 
 
-				PRIMER-DIMER DETECTION --------------
-				Comparing 'test1' and 'test1':
-				TTGAATATAATGGGCCCAATATTCC-
-				     ||||||||||||||||||||
-				-TTGAATATAATGGGCCCAATATTCC
-				  Score=9
-				-TTGAATATAATGGGCCCAATATTCC
-				     ||||||||||||||||||||
-				TTGAATATAATGGGCCCAATATTCC-
-				  Score=9
-				HAIRPIN DETECTION: --------------------
-				test1 - TTGAATATAATGGGCCCAATATTCC
-				5
-				test1 - TTGAATATAATGGGCCCAATATTCC
-				5
-				MAX HAIRPIN OUTPUT: --------------------
-				6
-				3
-				GC-CONTENT DETECTION -------------------
-				36% (is lower than min = 40)
-				43%
+   * An example of the output log is available at: http://pastebin.com/0xDvbpvH
 
 --------------------------------------------------------------------------------
 Example usage (should be all on one line)
@@ -197,14 +182,14 @@ interaction that is less than 5 rungs.
 
 Here are the file locations;
 
-	File to import (relative location): /input/60-primers.csv
-	File to export (relative location): /output/output-60-primers.log
+   File to import (relative location): /input/60-primers.csv
+   File to export (relative location): /output/output-60-primers.log
 
 This is the command that would fulfill those requirements;
 
-	python primer-lint.py --importhiplex input/60-primers.csv --outputlog 
-	output/output-60-primers.log --cg --cgmin 30 --cgmax 70 --hairpin 6 
-	--primerdimer 5
+   python primer-lint.py --importhiplex input/60-primers.csv --outputlog 
+   output/output-60-primers.log --cg --cgmin 30 --cgmax 70 --hairpin 6 
+   --primerdimer 5
 
 --------------------------------------------------------------------------------
 References
