@@ -202,6 +202,19 @@ This is the command that would fulfill those requirements;
    --primerdimer 5
 
 --------------------------------------------------------------------------------
+Troubleshooting
+--------------------------------------------------------------------------------
+
+Question: I can't get primer-lint to import a CSV file, I'm getting errors 
+          like this; 
+          
+     "Error importing hiplex-CSV file... <type 'exceptions.SystemExit'>"
+
+Solution: Copy and paste the csv data from the current file into a new csv file.
+          This appears to be caused by the original file being locked or having
+          incorrect file permissions.
+
+--------------------------------------------------------------------------------
 References
 --------------------------------------------------------------------------------
 
