@@ -35,7 +35,7 @@ Installation
 
 The easiest way to install Primer-Lint is via pip (3).
 
-Type this into terminal: pip install git+http//github.com/Kiwwa/primer-lint.git
+Type this into terminal: pip install git+http://github.com/Kiwwa/primer-lint.git
 
 Alternatively Primer-Lint can be downloaded and manually installed from (4).
 
